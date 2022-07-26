@@ -8,3 +8,7 @@ Auto-scalable and cost-efficient architecture for a data analytics application o
       B-->D;
       C-->D;
 ```
+
+```puml
+Bob->Alice : Hello!
+```
