@@ -10,5 +10,7 @@ Auto-scalable and cost-efficient architecture for a data analytics application o
 ```
 
 ```puml
+@startuml
 Bob->Alice : Hello!
+@enduml
 ```
