@@ -13,7 +13,7 @@ We can simply build a monolyth application and lauch it in ECS auto-scaling grou
 ```mermaid
 flowchart LR
 lb[LB] --> api1(API) & api2(API)
-subgraph c1 [ECS auto scaling group]
+subgraph c1 [ECS auto scaling cluster]
     api1
     api2
 end
@@ -28,7 +28,7 @@ We can get unlucky and majority of the jobs en up on one instance. Since job res
   flowchart LR
   style api1 fill:red
   lb[LB] --> api1(API 100%) & api2(API 0%)
-  subgraph c1 [ECS auto scaling group 50%]
+  subgraph c1 [ECS auto scaling cluster 50%]
       api1
       api2
   end
@@ -43,7 +43,7 @@ Even if jobs are distributed evenly, we can fill all instances' capacity quckly 
   style api1 fill:red
   style api2 fill:red
   lb[LB] --> api1(API 100%) & api2(API 100%)
-  subgraph c1 [ECS auto scaling group 100%]
+  subgraph c1 [ECS auto scaling cluster 100%]
       api1
       api2
       api3(API starting...)
@@ -59,7 +59,7 @@ Even if jobs are distributed evenly and we dont get heavy job spikes, we can sti
   style api1 fill:grey
   lb[LB] -.X.-> api1("API (dead)") 
   lb[LB] -->  api2(API)
-  subgraph c1 [ECS auto scaling group]
+  subgraph c1 [ECS auto scaling cluster]
       api1
       api2
   end
