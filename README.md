@@ -12,56 +12,56 @@ We can simply build a monolyth application and lauch it in ECS auto-scaling grou
 
 ```mermaid
 flowchart LR
-lb[LB] --> api1(API) & api2(API)
+lb[LB] --> app1(Application) & app2(Application)
 subgraph c1 [ECS auto scaling cluster]
-    api1
-    api2
+    app1
+    app2
 end
 ```
 However such approach has several disadvantages
 
 ### 1. Uneven instance load
 
-We can get unlucky and majority of the jobs en up on one instance. Since job resource consumption is unproportionally heavy compared to processing REST requests, instance performance will degrade heavily. Even thoug one instance is running on the edge consuming 100% of resources, from the cluster perspective only 50% of resources are consumed so scale-up does not happen. This can result in slow response times for requests that keep hitting the loaded instance and eventually the cluster can kill instance if it stops sresponding. This will result in job loss.
+We can get unlucky and majority of the jobs en up on one instance. Since job resource consumption is unproportionally heavy compared to processing REST requests, instance performance will degrade heavily. Even though one instance is running on the edge consuming 100% of resources, from the cluster perspective only 50% of resources are consumed so scale-up does not happen. This can result in slow response times for requests that keep hitting the loaded instance and eventually the cluster can kill instance if it stops responding. This will result in job loss.
 
 ```mermaid
   flowchart LR
-  style api1 fill:red
-  lb[LB] --> api1(API 100%) & api2(API 0%)
+  style app1 fill:red
+  lb[LB] --> app1(Application 100%) & app2(Application 0%)
   subgraph c1 [ECS auto scaling cluster 50%]
-      api1
-      api2
+      app1
+      app2
   end
 ```
 
-### 2. Slowdown on a spike
+### 2. Slowdown on jobs spike
 
-Even if jobs are distributed evenly, we can fill all instances' capacity quckly during job spike. This will result in slow response times while auto-scaling group brings alive new instances (which can take minutes). If we get unlucky the cluster kills some instances which results in job loss like in the previous example.
+Even if jobs are distributed evenly, we can fill all instances' capacity quickly during job spike. This will result in slow response times while auto-scaling group brings alive new instances (which can take minutes). If we get unlucky the cluster kills some instances which results in job loss like in the previous example.
 
 ```mermaid
   flowchart LR
-  style api1 fill:red
-  style api2 fill:red
-  lb[LB] --> api1(API 100%) & api2(API 100%)
+  style app1 fill:red
+  style app2 fill:red
+  lb[LB] --> app1(Application 100%) & app2(Application 100%)
   subgraph c1 [ECS auto scaling cluster 100%]
-      api1
-      api2
-      api3(API starting...)
+      app1
+      app2
+      app3(Application starting...)
   end
 ```
 
 ### 3. Job loss on random instance failure
 
-Even if jobs are distributed evenly and we dont get heavy job spikes, we can still loose submitted jobs. AWS explicitly says that ECS instances might die time to time [add reference], which means we can loose unfinished jobs. 
+Even if jobs are distributed evenly and we don’t get heavy job spikes, we can still loose submitted jobs. AWS explicitly says that ECS instances might die time to time [add reference], which means we can loose unfinished jobs. 
 
 ```mermaid
   flowchart LR
-  style api1 fill:grey
-  lb[LB] -.X.-> api1("API (dead)") 
-  lb[LB] -->  api2(API)
+  style app1 fill:grey
+  lb[LB] -.X.-> app1("Application (dead)") 
+  lb[LB] -->  app2(API)
   subgraph c1 [ECS auto scaling cluster]
-      api1
-      api2
+      app1
+      app2
   end
 ```
 
@@ -85,7 +85,7 @@ This architecture is much better, since we can scale workers independently and t
 
 ### 1. Job termination during scale-down
 
-When we have a job spike, auto-scaling group increases the amount of workers. Once the queue is empty some workers will become idle. So auto-scaling group will start scaling-down, since we don't need that many worker any longer. However, in the current implementation of AWS auto-scaling group does not understand which instances are idle and which are not [add reference]. It might send a kill signal to an instance that runs an unfinished job. We could use lambda instead, but here we emmidiatly run into a limitation of lambda runtime: the longest AWS lambda can run is 15 min. Some of our heavy jobs will never be finished.
+When we have a job spike, auto-scaling group increases the amount of workers. Once the queue is empty some workers will become idle. So auto-scaling group will start scaling-down, since we don't need that many worker any longer. However, in the current implementation of AWS auto-scaling group does not understand which instances are idle and which are not [add reference]. It might send a kill signal to an instance that runs an unfinished job. We could use lambda instead, but here we immediately run into a limitation of lambda runtime: the longest AWS lambda can run is 15 min. Some of our heavy jobs will never be finished.
 
 ```mermaid
   flowchart LR
@@ -123,4 +123,4 @@ When we have a job spike, auto-scaling group increases the amount of workers. On
   l1[Orchestrator] --> c2 & q1
 ```
 
-We write our own orchestaror that will scale-up worker instances if the queue grows, but it will never scale them down. Instead, worker will simply termitate itself if there are no messages to consume from the job queue. This is a simple solution that guarantees no unnecesary job terminations (unless instance dies unexpectedly) and no idle workers.
+We write our own orchestrator that will scale-up worker instances if the queue grows, but it will never scale them down. Instead, worker will simply terminate itself if there are no messages to consume from the job queue. This is a simple solution that guarantees no unnecessary job terminations (unless instance dies unexpectedly) and no idle workers.
