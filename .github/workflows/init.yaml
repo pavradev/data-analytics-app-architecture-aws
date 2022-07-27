@@ -1,0 +1,27 @@
+name: Init AWS environment
+
+on:
+  workflow_dispatch:
+    inputs:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_ECR: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com"
+
+jobs:
+
+  provision:
+    name: Initialize AWS enviromnent
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Deploy
+      run: |
+          aws s3api create-bucket --bucket $AWS_ACCOUNT_ID-terraform-state --create-bucket-configuration LocationConstraint=$AWS_DEFAULT_REGION
+          aws ecr create-repository --repository-name api
+          aws ecr create-repository --repository-name worker
+
+    
