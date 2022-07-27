@@ -10,14 +10,8 @@ An application has REST API to post data, launch analysis jobs on this data, and
 
 We can simply build a monolyth application and lauch it in ECS auto-scaling group. Auto-scaling group will scale up or down our application depending on resource usage. 
 
-```mermaid
-flowchart LR
-lb[LB] --> app1(Application) & app2(Application)
-subgraph c1 [ECS auto scaling cluster]
-    app1
-    app2
-end
-```
+![Monolyth architecture](./diagrams/monolyth.png "Monolyth architecture")
+
 However such approach has several disadvantages
 
 ### 1. Uneven instance load
