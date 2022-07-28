@@ -1,11 +1,11 @@
-name: Deploy Worker service on AWS
+name: Build Orchestrator
 
 on:
   workflow_dispatch:
     inputs:
   push:
     paths:
-      - 'worker/**'
+      - 'orchestrator/**'
     branches: [ main ]
 
 env:
@@ -23,9 +23,9 @@ jobs:
     - name: Build the Docker image
       uses: actions/checkout@v2
     - shell: bash
-      working-directory: api
+      working-directory: orchestrator
       run: |
         pass=`aws ecr get-login-password`
         docker login --username AWS --password $pass $AWS_ECR
-        docker build . --file Dockerfile --tag $AWS_ECR/worker:latest
-        docker push $AWS_ECR/worker:latest
+        docker build . --file Dockerfile --tag $AWS_ECR/orchestrator:latest
+        docker push $AWS_ECR/orchestrator:latest

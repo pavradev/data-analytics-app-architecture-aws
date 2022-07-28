@@ -1,11 +1,11 @@
-name: Deploy API service on AWS
+name: Build Worker service
 
 on:
   workflow_dispatch:
     inputs:
   push:
     paths:
-      - 'api/**'
+      - 'worker/**'
     branches: [ main ]
 
 env:
@@ -27,5 +27,5 @@ jobs:
       run: |
         pass=`aws ecr get-login-password`
         docker login --username AWS --password $pass $AWS_ECR
-        docker build . --file Dockerfile --tag $AWS_ECR/api:latest
-        docker push $AWS_ECR/api:latest
+        docker build . --file Dockerfile --tag $AWS_ECR/worker:latest
+        docker push $AWS_ECR/worker:latest
