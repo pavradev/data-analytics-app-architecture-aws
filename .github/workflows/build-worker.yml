@@ -23,7 +23,7 @@ jobs:
     - name: Build the Docker image
       uses: actions/checkout@v2
     - shell: bash
-      working-directory: api
+      working-directory: worker
       run: |
         pass=`aws ecr get-login-password`
         docker login --username AWS --password $pass $AWS_ECR
