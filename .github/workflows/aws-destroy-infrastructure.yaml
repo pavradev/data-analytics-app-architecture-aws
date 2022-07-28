@@ -19,6 +19,8 @@ jobs:
     container: hashicorp/terraform:light
     steps:
 
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Create resources
       working-directory: infrastructure
       run: |
