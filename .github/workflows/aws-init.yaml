@@ -27,12 +27,12 @@ jobs:
 
   build-api:
     uses: ./.github/workflows/build-api.yml
-    depends-on: init
+    needs: init
   
   build-worker:
     uses: ./.github/workflows/build-worker.yml
-    depends-on: init
+    needs: init
 
   build-orchestrator:
     uses: ./.github/workflows/build-orchestrator.yml
-    depends-on: init
+    needs: init
