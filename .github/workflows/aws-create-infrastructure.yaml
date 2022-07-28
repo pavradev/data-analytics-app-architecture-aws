@@ -20,6 +20,7 @@ jobs:
     steps:
 
     - name: Create resources
+      working-directory: infrastructure
       run: |
           terraform init -backend-config="bucket=$AWS_ACCOUNT_ID-terraform-state"
           terraform validate
