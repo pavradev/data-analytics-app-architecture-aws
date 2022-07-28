@@ -1,0 +1,31 @@
+name: Deploy Worker service on AWS
+
+on:
+  workflow_dispatch:
+    inputs:
+  push:
+    paths:
+      - 'worker/**'
+    branches: [ main ]
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_ECR: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com"
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build the Docker image
+      uses: actions/checkout@v2
+    - shell: bash
+      working-directory: api
+      run: |
+        pass=`aws ecr get-login-password`
+        docker login --username AWS --password $pass $AWS_ECR
+        docker build . --file Dockerfile --tag $AWS_ECR/worker:latest
+        docker push $AWS_ECR/worker:latest

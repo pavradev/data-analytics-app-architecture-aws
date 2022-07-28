@@ -18,10 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Deploy
+    - name: Create resources
       run: |
           aws s3api create-bucket --bucket $AWS_ACCOUNT_ID-terraform-state --create-bucket-configuration LocationConstraint=$AWS_DEFAULT_REGION
           aws ecr create-repository --repository-name api
           aws ecr create-repository --repository-name worker
+          aws ecr create-repository --repository-name orchestrator
 
     

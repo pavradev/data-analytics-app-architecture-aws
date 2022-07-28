@@ -1,0 +1,47 @@
+version: "3.3"
+
+services:
+    api:
+        build: api
+        restart: unless-stopped
+        ports:
+            - 8000:8000
+        environment:
+            - AWS_DEFAULT_REGION=eu-west-1
+            - AWS_ACCESS_KEY_ID=test
+            - AWS_SECRET_ACCESS_KEY=test
+            - AWS_ENDPOINT_URL=http://localstack:4566
+        networks:
+            - analytics_net
+        depends_on:
+            - localstack
+
+    worker:
+        build: worker
+        restart: unless-stopped
+        environment:
+            - AWS_DEFAULT_REGION=eu-west-1
+            - AWS_ACCESS_KEY_ID=test
+            - AWS_SECRET_ACCESS_KEY=test
+            - AWS_ENDPOINT_URL=http://localstack:4566
+        networks:
+            - analytics_net
+        depends_on:
+            - localstack
+
+    localstack:
+        image: localstack/localstack:0.14
+        ports:
+            - 4566:4566
+            - 4571:4571
+        volumes:
+            - "./localstack:/docker-entrypoint-initaws.d"
+        environment:
+            - SERVICES=sqs
+            - AWS_DEFAULT_REGION=eu-west-1
+        networks:
+            - analytics_net
+
+networks:
+  analytics_net:
+
