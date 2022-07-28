@@ -1,8 +1,7 @@
 name: Build API service
 
 on:
-  workflow_dispatch:
-    inputs:
+  workflow_call:
   push:
     paths:
       - 'api/**'
@@ -20,9 +19,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Build the Docker image
+    - name: Checkout
       uses: actions/checkout@v2
-    - shell: bash
+    - name: Build Docker image
+      shell: bash
       working-directory: api
       run: |
         pass=`aws ecr get-login-password`

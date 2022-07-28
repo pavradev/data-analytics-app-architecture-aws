@@ -1,6 +1,7 @@
 name: Create application infrastructure
 
 on:
+  workflow_call:
   workflow_dispatch:
     inputs:
 
