@@ -1,0 +1,48 @@
+name: Destroy application infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_ECR: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com"
+
+jobs:
+
+  terraform-destroy:
+    name: Destroy AWS infrastructure
+    runs-on: ubuntu-latest
+    container: hashicorp/terraform:light
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Terraform destroy
+      working-directory: infrastructure
+      run: |
+          terraform init -backend-config="bucket=$AWS_ACCOUNT_ID-terraform-state"
+          terraform destroy -auto-approve
+  
+  cleanup:
+    name: Cleanup AWS resources
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Remove s3 state bucket
+      run: |
+          aws s3 rm --recursive s3://077493941372-terraform-state
+          aws s3api delete-bucket --bucket 077493941372-terraform-state
+    - name: Remove api ECR
+      run: |
+          aws ecr delete-repository --repository-name api
+    - name: Remove worker ECR
+      run: |
+          aws ecr delete-repository --repository-name worker
+    - name: Remove orchestrator ECR
+      run: |
+          aws ecr delete-repository --repository-name orchestrator
+    
