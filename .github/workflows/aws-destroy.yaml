@@ -45,4 +45,5 @@ jobs:
     - name: Remove orchestrator ECR
       run: |
           aws ecr delete-repository --repository-name orchestrator
+    needs: terraform-destroy
     
