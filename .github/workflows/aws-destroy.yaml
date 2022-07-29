@@ -38,12 +38,12 @@ jobs:
           aws s3api delete-bucket --bucket 077493941372-terraform-state
     - name: Remove api ECR
       run: |
-          aws ecr delete-repository --repository-name api
+          aws ecr delete-repository --force --repository-name api
     - name: Remove worker ECR
       run: |
-          aws ecr delete-repository --repository-name worker
+          aws ecr delete-repository --force --repository-name worker
     - name: Remove orchestrator ECR
       run: |
-          aws ecr delete-repository --repository-name orchestrator
+          aws ecr delete-repository --force --repository-name orchestrator
     needs: terraform-destroy
     
