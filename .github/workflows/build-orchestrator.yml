@@ -1,7 +1,6 @@
 name: Build Orchestrator
 
 on:
-  workflow_call:
   push:
     paths:
       - 'orchestrator/**'

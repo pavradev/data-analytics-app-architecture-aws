@@ -14,7 +14,6 @@ env:
 jobs:
 
   init:
-    name: Initialize AWS enviromnent
     runs-on: ubuntu-latest
     steps:
 
@@ -26,13 +25,62 @@ jobs:
           aws ecr create-repository --repository-name orchestrator
 
   build-api:
-    uses: ./.github/workflows/build-api.yml
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Build Docker image
+      shell: bash
+      working-directory: api
+      run: |
+        pass=`aws ecr get-login-password`
+        docker login --username AWS --password $pass $AWS_ECR
+        docker build . --file Dockerfile --tag $AWS_ECR/api:latest
+        docker push $AWS_ECR/api:latest
     needs: init
   
   build-worker:
-    uses: ./.github/workflows/build-worker.yml
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Build Docker image
+      shell: bash
+      working-directory: worker
+      run: |
+        pass=`aws ecr get-login-password`
+        docker login --username AWS --password $pass $AWS_ECR
+        docker build . --file Dockerfile --tag $AWS_ECR/worker:latest
+        docker push $AWS_ECR/worker:latest
     needs: init
 
   build-orchestrator:
-    uses: ./.github/workflows/build-orchestrator.yml
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Build Docker image
+      shell: bash
+      working-directory: api
+      run: |
+        pass=`aws ecr get-login-password`
+        docker login --username AWS --password $pass $AWS_ECR
+        docker build . --file Dockerfile --tag $AWS_ECR/api:latest
+        docker push $AWS_ECR/api:latest
     needs: init
+
+  create-aws-resources:
+    name: Create AWS resources
+    runs-on: ubuntu-latest
+    container: hashicorp/terraform:light
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Create resources
+      working-directory: infrastructure
+      run: |
+          terraform init -backend-config="bucket=$AWS_ACCOUNT_ID-terraform-state"
+          terraform validate
+          terraform apply -auto-approve
+    needs: [build-api, build-worker, build-orchestrator]

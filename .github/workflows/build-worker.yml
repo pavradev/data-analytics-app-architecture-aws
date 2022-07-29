@@ -1,7 +1,6 @@
 name: Build Worker service
 
 on:
-  workflow_call:
   push:
     paths:
       - 'worker/**'

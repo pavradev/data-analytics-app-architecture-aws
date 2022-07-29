@@ -1,7 +1,6 @@
 name: Build API service
 
 on:
-  workflow_call:
   push:
     paths:
       - 'api/**'
