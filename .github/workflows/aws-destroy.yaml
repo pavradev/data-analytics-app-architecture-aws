@@ -1,4 +1,4 @@
-name: Destroy application infrastructure
+name: Destroy AWS environment
 
 on:
   workflow_dispatch:

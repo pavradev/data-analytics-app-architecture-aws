@@ -67,11 +67,11 @@ jobs:
       uses: actions/checkout@v2
     - name: Build Docker image
       shell: bash
-      working-directory: api
+      working-directory: orchestrator
       run: |
         pass=`aws ecr get-login-password`
         docker login --username AWS --password $pass $AWS_ECR
-        docker build . --file Dockerfile --tag $AWS_ECR/api:latest
+        docker build . --file Dockerfile --tag $AWS_ECR/api:orchestrator
         docker push $AWS_ECR/api:latest
     needs: init
 
