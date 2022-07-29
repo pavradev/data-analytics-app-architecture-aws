@@ -71,8 +71,8 @@ jobs:
       run: |
         pass=`aws ecr get-login-password`
         docker login --username AWS --password $pass $AWS_ECR
-        docker build . --file Dockerfile --tag $AWS_ECR/api:orchestrator
-        docker push $AWS_ECR/api:latest
+        docker build . --file Dockerfile --tag $AWS_ECR/orchestrator:latest
+        docker push $AWS_ECR/orchestrator:latest
     needs: init
 
   create-aws-resources:
