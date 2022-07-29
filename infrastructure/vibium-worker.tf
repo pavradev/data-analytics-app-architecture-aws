@@ -57,8 +57,8 @@ resource "aws_ecs_task_definition" "worker" {
       ]
     }
   ])
-  cpu = 512
-  memory = 1024
+  cpu = 256
+  memory = 512
   requires_compatibilities = ["FARGATE"]
   network_mode = "awsvpc"
   task_role_arn = resource.aws_iam_role.worker_task_role.arn

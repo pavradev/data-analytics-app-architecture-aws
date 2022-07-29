@@ -98,16 +98,16 @@ resource "aws_ecs_task_definition" "api" {
   family                   = "api-app"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 512
-  memory                   = 1024
+  cpu                      = 256
+  memory                   = 512
   task_role_arn = resource.aws_iam_role.api_task_role.arn
   execution_role_arn = resource.aws_iam_role.api_task_execution_role.arn
   container_definitions = <<DEFINITION
 [
   {
     "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-1.amazonaws.com/api:latest",
-    "cpu": 512,
-    "memory": 1024,
+    "cpu": 256,
+    "memory": 512,
     "name": "app",
     "networkMode": "awsvpc",
     "portMappings": [
