@@ -35,7 +35,7 @@ This repository is structured as monorepo and fully self-contained.
 - [orchestrator](./orchestrator/README.md) repository contains `orchestrator` code
 - [infrastructure](./infrastructure/README.md) repository contains terraform configuration that deploys AWS infrastructure components
 
-# Running locally
+# Running locally in docker
 
 You need `docker` with docker-compose to run locally. From the root folder run
 
@@ -54,6 +54,14 @@ To shut down local environment run
 
 ```
     docker-compose down
+```
+
+# Running locally in docker
+
+Prerequisite: you need to have postgres and localstack running on your localhost
+
+```
+    source .envlocal && uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 We use [localstack](https://github.com/localstack/localstack) to simulate AWS job-queue locally. Also note that `orchestrator` is not started when running locally. Insteat, docker-compose itself will make sure that 1 instance of `woker` is always running.

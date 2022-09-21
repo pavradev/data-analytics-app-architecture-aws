@@ -11,10 +11,12 @@ services:
             - AWS_ACCESS_KEY_ID=test
             - AWS_SECRET_ACCESS_KEY=test
             - AWS_ENDPOINT_URL=http://localstack:4566
+            - POSTGRES_PASSWORD=analytics
         networks:
             - analytics_net
         depends_on:
             - localstack
+            - postgres
 
     worker:
         build: worker
@@ -24,10 +26,22 @@ services:
             - AWS_ACCESS_KEY_ID=test
             - AWS_SECRET_ACCESS_KEY=test
             - AWS_ENDPOINT_URL=http://localstack:4566
+            - POSTGRES_PASSWORD=analytics
         networks:
             - analytics_net
         depends_on:
             - localstack
+            - postgres
+
+    postgres:
+        image: postgres:9.6
+        restart: on-failure
+        environment:
+            - POSTGRES_PASSWORD=analytics
+        ports:
+            - 5432:5432
+        networks:
+            - analytics_net
 
     localstack:
         image: localstack/localstack:0.14

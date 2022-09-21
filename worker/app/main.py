@@ -23,9 +23,9 @@ def main():
         for message in messages:
             logging.info("Received message %s ", message.body)
             body = json.loads(message.body)
-            executinTime = body.get('jobExectutionTime')
-            logging.info("Sleeping %s seconds", executinTime)
-            sleep(executinTime)
+            executin_time = body.get('jobExectutionTime')
+            logging.info("Sleeping %s seconds", executin_time)
+            sleep(executin_time)
             message.delete()
 
 if __name__ == '__main__':
