@@ -6,8 +6,7 @@ import boto3
 import logging
 import json
 from sqlalchemy.orm import Session
-from . import repository, models, schemas
-from .database import SessionLocal, engine
+from app import repository, models, database, schemas
 
 logger = logging.getLogger(__name__)
 
@@ -16,13 +15,13 @@ sqs = boto3.resource("sqs", endpoint_url=endpoint_url)
 job_queue = sqs.get_queue_by_name(QueueName='job-queue')
 job_result_queue = sqs.get_queue_by_name(QueueName='job-result-queue')
 
-models.Base.metadata.create_all(bind=engine)
+database.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
 
 # Dependency
 def get_db():
-    db = SessionLocal()
+    db = database.SessionLocal()
     try:
         yield db
     finally:
@@ -34,7 +33,7 @@ async def listen_to_job_results():
     while True:
         try:
             await asyncio.sleep(5)
-            db = SessionLocal()
+            db = database.SessionLocal()
             for message in job_result_queue.receive_messages(MaxNumberOfMessages=10):
                 logging.info("Received job result %s ", message.body)
                 body = json.loads(message.body)

@@ -1,7 +1,6 @@
 {
     "version": "0.2.0",
     "configurations": [
-        
         {
             "name": "Python: Current File",
             "type": "python",
@@ -11,7 +10,6 @@
             "justMyCode": "true",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/api/app/",
-
                 "AWS_DEFAULT_REGION": "eu-west-1",
                 "AWS_ACCESS_KEY_ID": "test",
                 "AWS_SECRET_ACCESS_KEY": "test",
