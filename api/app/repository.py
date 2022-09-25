@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-
 from . import models, schemas
 
 def get_jobs(db: Session, skip: int = 0, limit: int = 100):
@@ -12,3 +11,12 @@ def create_job(db: Session, item: schemas.JobIn):
     db.commit()
     db.refresh(db_job)
     return db_job
+
+
+def update_job_status(db: Session, id: int, status=schemas.JobStatus):
+    db_job = db.query(models.Job).filter_by(id=id).one()
+    db_job.status = status
+    db.commit()
+    db.refresh(db_job)
+    return db_job
+

@@ -12,6 +12,7 @@ services:
             - AWS_SECRET_ACCESS_KEY=test
             - AWS_ENDPOINT_URL=http://localstack:4566
             - POSTGRES_PASSWORD=analytics
+            - POSTGRES_SERVER=postgres
         networks:
             - analytics_net
         depends_on:
@@ -26,7 +27,6 @@ services:
             - AWS_ACCESS_KEY_ID=test
             - AWS_SECRET_ACCESS_KEY=test
             - AWS_ENDPOINT_URL=http://localstack:4566
-            - POSTGRES_PASSWORD=analytics
         networks:
             - analytics_net
         depends_on:
