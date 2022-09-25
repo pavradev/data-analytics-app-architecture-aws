@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app import models, schemas
+import models, schemas
 
 def get_jobs(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Job).offset(skip).limit(limit).all()

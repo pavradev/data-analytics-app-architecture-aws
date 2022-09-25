@@ -1,13 +1,19 @@
 import os
 import asyncio
+from concurrent.futures.process import ProcessPoolExecutor
+from time import sleep
 from typing import List
 from fastapi import FastAPI, Depends
 import boto3
 import logging
 import json
 from sqlalchemy.orm import Session
-from app import repository, models, database, schemas
+import repository, database, schemas
 
+
+# initialize logger
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 endpoint_url = os.getenv("AWS_ENDPOINT_URL")
@@ -28,24 +34,40 @@ def get_db():
         db.close()
 
 
+async def run_in_process(fn, *args):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(app.state.executor, fn, *args)  # wait and return result
+
+
+def consume_messages():
+    try:
+        db = database.SessionLocal()
+        logger.info("Getting job results")
+        for message in job_result_queue.receive_messages(MaxNumberOfMessages=10):
+            logging.info("Received job result %s ", message.body)
+            body = json.loads(message.body)
+            repository.update_job_status(db=db, id=body.get('id'), status=schemas.JobStatus.COMPLETED)
+            message.delete()
+    finally:
+        db.close()
+
+
 async def listen_to_job_results():
     logger.info("Starting job result listener")
     while True:
-        try:
-            await asyncio.sleep(5)
-            db = database.SessionLocal()
-            for message in job_result_queue.receive_messages(MaxNumberOfMessages=10):
-                logging.info("Received job result %s ", message.body)
-                body = json.loads(message.body)
-                repository.update_job_status(db=db, id=body.get('id'), status=models.JobStatus.COMPLETED)
-                message.delete()
-        finally:
-            db.close()
+        await asyncio.sleep(5)
+        await run_in_process(consume_messages)
 
 
 @app.on_event('startup')
 async def startup():
+    app.state.executor = ProcessPoolExecutor()
     asyncio.create_task(listen_to_job_results())
+
+
+@app.on_event('shutdown')
+async def stop():
+    app.state.executor.shutdown()
 
 
 @app.post("/jobs", response_model=schemas.JobOut)

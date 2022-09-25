@@ -1,5 +1,5 @@
 from sqlalchemy import Enum, Column, Integer
-from app import schemas, database
+import schemas, database
 
 class Job(database.Base):
     __tablename__ = "jobs"
