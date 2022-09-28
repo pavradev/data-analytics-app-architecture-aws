@@ -1,21 +1,31 @@
-from typing import Optional
 from pydantic import BaseModel
-from enum import Enum
-
-class JobStatus(Enum):
-    CREATED = 1
-    QUEUED = 2
-    COMPLETED = 3
-    ERROR = 4
+from . import models
 
 class JobIn(BaseModel):
-    timeSeconds: int
+    time_seconds: int
 
 class JobOut(BaseModel):
     id: int
-    timeSeconds: int
-    status: JobStatus
-    completedInSeconds: Optional[int]
+    time_seconds: int
+    status: models.JobStatus
+
+    class Config:
+        orm_mode = True
+
+
+class UserIn(BaseModel):
+    name: str
+    role: models.Role
+    client_id: str
+
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    role: models.Role
+    client_id: str
+    key_id: str
+    secret_key: str
 
     class Config:
         orm_mode = True

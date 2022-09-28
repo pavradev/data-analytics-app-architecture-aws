@@ -7,6 +7,8 @@ services:
     #     ports:
     #         - 8000:8000
     #     environment:
+    #         - ADMIN_KEY_ID: admin
+    #         - ADMIN_HASHED_SECRET_KEY: "$pbkdf2-sha256$29000$LCVEqJVSSiklBIDQurfWeg$LwmCCnsF2cX5oxbv6sp2FYA0QJt8URn/TBzIaGYsy7Y" #hash for 'admin'
     #         - AWS_DEFAULT_REGION=eu-west-1
     #         - AWS_ACCESS_KEY_ID=test
     #         - AWS_SECRET_ACCESS_KEY=test

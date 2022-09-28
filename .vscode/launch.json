@@ -2,14 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "API",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "justMyCode": "true",
+            "module": "api.app.main",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/api/app/",
+                "ADMIN_KEY_ID": "admin",
+                "ADMIN_HASHED_SECRET_KEY": "$pbkdf2-sha256$29000$LCVEqJVSSiklBIDQurfWeg$LwmCCnsF2cX5oxbv6sp2FYA0QJt8URn/TBzIaGYsy7Y",
                 "AWS_DEFAULT_REGION": "eu-west-1",
                 "AWS_ACCESS_KEY_ID": "test",
                 "AWS_SECRET_ACCESS_KEY": "test",
